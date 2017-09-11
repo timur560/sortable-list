@@ -68,6 +68,8 @@
            */
           sortable: String,
 
+          dragger: String,
+
           /**
            * The list of sortable items.
            */
@@ -153,10 +155,12 @@
         if (this.disabled) {
           return;
         }
+
         this._target = this._itemFromEvent(event);
-        if (!this._target || !event.target.closest('.dragger')) {
+
+        if (!this._target || (this.dragger && !event.target.closest(this.dragger))) {
           return;
-      }
+        }
 
         event.stopPropagation();
         this._rects = this._getItemsRects();
