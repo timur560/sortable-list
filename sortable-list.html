@@ -46,7 +46,7 @@
         z-index: 2;
       }
     </style>
-    
+
     <div id="items">
       <slot id="slot"></slot>
     </div>
@@ -63,10 +63,12 @@
         return {
 
           /**
-           * This is a CSS selector string. If this is set, only items that 
+           * This is a CSS selector string. If this is set, only items that
            * match the CSS selector are sortable.
            */
           sortable: String,
+
+          dragger: String,
 
           /**
            * The list of sortable items.
@@ -120,7 +122,7 @@
           this._updateItems();
           this._toggleListeners({enable: true});
         });
-      } 
+      }
 
       disconnectedCallback() {
         super.disconnectedCallback();
@@ -130,10 +132,13 @@
 
       _toggleListeners({enable}) {
         const m = enable ? 'addEventListener' : 'removeEventListener';
-        this.$.items[m]('dragstart', this._onDragStart);
-        this.$.items[m]('transitionend', this._onTransitionEnd);
+
+        const dragElement = this.dragger ?  this.$.items[m].querySelector(this.dragger) : this.$.items[m];
+
+        dragElement[m]('dragstart', this._onDragStart);
+        dragElement[m]('transitionend', this._onTransitionEnd);
         this.$.items[m]('contextmenu', this._onContextMenu);
-        this.$.items[m]('touchmove', this._onTouchMove);
+        dragElement[m]('touchmove', this._onTouchMove);
         if (enable) {
           Polymer.Gestures.addListener(this, 'track', this._onTrack);
         } else {
@@ -322,7 +327,7 @@
       }
 
       /**
-       * Move an array item from one position to another.     
+       * Move an array item from one position to another.
        * Source: http://stackoverflow.com/questions/5306680/move-an-array-element-from-one-array-position-to-another
        */
       _moveItemArray(array, oldIndex, newIndex) {
